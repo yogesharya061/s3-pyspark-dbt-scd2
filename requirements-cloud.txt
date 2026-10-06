@@ -1,0 +1,7 @@
+dbt-core==1.9.10
+dbt-databricks==1.9.7
+dbt-spark==1.9.3
+boto3==1.40.0
+requests==2.32.5
+psycopg[binary]==3.2.9
+PyYAML==6.0.3

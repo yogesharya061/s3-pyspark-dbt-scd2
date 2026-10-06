@@ -1,0 +1,11 @@
+[
+  {
+    "order_id": "O2",
+    "customer_id": "C1",
+    "product_id": "P2",
+    "quantity": "1",
+    "unit_price": "80.00",
+    "ordered_at": "2026-01-02 12:00:00",
+    "updated_at": "2026-01-02 12:00:00"
+  }
+]

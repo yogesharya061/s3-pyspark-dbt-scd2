@@ -1,0 +1,17 @@
+{
+  "customers": {
+    "input": 2,
+    "accepted_unique": 2,
+    "rejected": 0
+  },
+  "orders": {
+    "input": 1,
+    "accepted_unique": 1,
+    "rejected": 0
+  },
+  "products": {
+    "input": 2,
+    "accepted_unique": 2,
+    "rejected": 0
+  }
+}

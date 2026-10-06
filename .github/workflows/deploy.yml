@@ -1,0 +1,71 @@
+name: Deploy and run cloud batch
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [dev, prod]
+        default: dev
+      batch:
+        description: Unique batch ID; fixture choices batch_001 then batch_002
+        required: true
+        default: batch_001
+      fixtures:
+        description: Use synthetic fixture files instead of API/PostgreSQL
+        type: boolean
+        default: true
+      run_batch:
+        description: Run paid compute after deploying
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: cloud-lakehouse-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      BUNDLE_VAR_catalog: ${{ vars.CATALOG }}
+      BUNDLE_VAR_cluster_id: ${{ vars.CLUSTER_ID }}
+      BUNDLE_VAR_lake_root: ${{ vars.LAKE_ROOT }}
+      LAKE_ROOT: ${{ vars.LAKE_ROOT }}
+      DBT_DATABRICKS_HOST: ${{ vars.DBT_HOST }}
+      DBT_HTTP_PATH: ${{ vars.DBT_HTTP_PATH }}
+      DBT_ACCESS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DBT_CATALOG: ${{ vars.CATALOG }}
+      DBT_GOLD_SCHEMA: portfolio_${{ inputs.environment }}_gold
+      DBT_SILVER_SCHEMA: portfolio_${{ inputs.environment }}_silver
+      DEPLOY_TARGET: ${{ inputs.environment }}
+      BATCH_ID: ${{ inputs.batch }}
+      USE_FIXTURES: ${{ inputs.fixtures && '1' || '0' }}
+      ORDERS_API_URL: ${{ vars.ORDERS_API_URL }}
+      ORDERS_API_TOKEN: ${{ secrets.ORDERS_API_TOKEN }}
+      POSTGRES_DSN: ${{ secrets.POSTGRES_DSN }}
+      CUSTOMERS_CSV: ${{ vars.CUSTOMERS_CSV }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: databricks/setup-cli@main
+      - run: python -m pip install -r requirements-cloud.txt
+      - run: databricks bundle validate -t "$DEPLOY_TARGET"
+      - run: databricks bundle deploy -t "$DEPLOY_TARGET"
+      - if: ${{ inputs.run_batch }}
+        run: bash scripts/cloud_batch.sh "$BATCH_ID"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cloud-dbt-evidence
+          path: dbt/target/run_results.json
+          if-no-files-found: ignore

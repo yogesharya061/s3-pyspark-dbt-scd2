@@ -1,0 +1,19 @@
+{
+  "customer_history_rows": 3,
+  "current_customers": 2,
+  "orders": [
+    [
+      "O1",
+      "Delhi",
+      "BASIC"
+    ],
+    [
+      "O2",
+      "Mumbai",
+      "GOLD"
+    ]
+  ],
+  "revenue": 180.0,
+  "snapshot_rerun_added_rows": 0,
+  "engine": "Local Spark + real dbt snapshots on DuckDB; not live cloud validation"
+}

@@ -1,0 +1,37 @@
+bundle:
+  name: s3-pyspark-dbt-scd2
+variables:
+  catalog:
+    description: Existing Unity Catalog catalog
+  cluster_id:
+    description: UC-enabled cluster running DBR 15.4 LTS
+  lake_root:
+    description: Environment prefix such as s3://bucket/portfolio/dev
+resources:
+  jobs:
+    silver:
+      name: portfolio-silver-${bundle.target}
+      max_concurrent_runs: 1
+      parameters:
+        - name: batch_id
+          default: batch_001
+      tasks:
+        - task_key: transform_silver
+          existing_cluster_id: ${var.cluster_id}
+          notebook_task:
+            notebook_path: ./notebooks/silver.py
+            base_parameters:
+              lake_root: ${var.lake_root}
+              catalog: ${var.catalog}
+              silver_schema: portfolio_${bundle.target}_silver
+              batch_id: '{{job.parameters.batch_id}}'
+          timeout_seconds: 1800
+          max_retries: 1
+targets:
+  dev:
+    default: true
+    mode: development
+  prod:
+    mode: production
+    workspace:
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}

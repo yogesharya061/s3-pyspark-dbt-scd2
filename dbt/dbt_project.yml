@@ -1,0 +1,10 @@
+name: lakehouse_gold
+version: '1.0.0'
+config-version: 2
+profile: lakehouse_gold
+model-paths: [models]
+snapshot-paths: [snapshots]
+test-paths: [tests]
+models:
+  lakehouse_gold:
+    +materialized: table

@@ -1,0 +1,16 @@
+lakehouse_gold:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('LOCAL_DB_PATH', '../.local/warehouse.duckdb') }}"
+      schema: gold
+      threads: 2
+    cloud:
+      type: databricks
+      host: "{{ env_var('DBT_DATABRICKS_HOST', 'unused') }}"
+      http_path: "{{ env_var('DBT_HTTP_PATH', 'unused') }}"
+      token: "{{ env_var('DBT_ACCESS_TOKEN', 'unused') }}"
+      catalog: "{{ env_var('DBT_CATALOG', 'portfolio') }}"
+      schema: "{{ env_var('DBT_GOLD_SCHEMA', 'portfolio_dev_gold') }}"
+      threads: 2

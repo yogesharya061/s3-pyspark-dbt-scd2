@@ -1,0 +1,4 @@
+customer_id,name,email,city,tier,is_deleted,updated_at
+C1,Asha,ASHA@example.com,delhi,basic,false,2026-01-01 00:00:00
+C2,Ravi,ravi@example.com,pune,gold,false,2026-01-01 00:00:00
+BAD,Invalid,not-email,delhi,basic,false,2026-01-01 00:00:00

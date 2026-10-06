@@ -1,0 +1,19 @@
+version: 2
+sources:
+  - name: silver
+    schema: "{{ env_var('DBT_SILVER_SCHEMA', 'silver') }}"
+    tables:
+      - name: customers
+        columns:
+          - name: customer_id
+            tests: [unique, not_null]
+          - name: updated_at
+            tests: [not_null]
+      - name: orders
+        columns:
+          - name: order_id
+            tests: [unique, not_null]
+      - name: products
+        columns:
+          - name: product_id
+            tests: [unique, not_null]
